@@ -10,38 +10,55 @@ App = {
       await App.loadAccount();
       await App.loadContract();
       await App.render();
-      await App.renderTasks();
+      //await App.renderTasks();
     },
     
     loadWeb3: async () => {
+      if (typeof web3 !== 'undefined') {
+        //App.web3Provider = web3.currentProvider
+        //web3 = new Web3(web3.currentProvider)
+        App.web3Provider = window.ethereum
+        web3 = new Web3(window.ethereum)
+        web3.eth.defaultAccount = web3.eth.accounts[0]
+      } else {
+        window.alert("Please connect to Metamask.")
+      }
+      // Modern dapp browsers...
+      if (window.ethereum) {
+        window.web3 = new Web3(ethereum)
         
-        const provider = await detectEthereumProvider()
-
-        if (provider) {
-          console.log('Ethereum successfully detected!')
-          // From now on, this should always be true:
-          // provider === window.ethereum
-        
-          // Access the decentralized web!
-        
-          // Legacy providers may only have ethereum.sendAsync
-          App.web3Provider = web3.currentProvider
-          //App.web3Provider = new Web3(ethereum)
-          const chainId = await provider.request({
-            method: 'eth_chainId'
-          })
-        } else {
-          // if the provider is not detected, detectEthereumProvider resolves to null
-          console.error('Please install MetaMask!' )
+        try {
+          // Request account access if needed
+          await ethereum.enable()
+          
+          // Acccounts now exposed
+          
+          web3.eth.sendTransaction(/* ... */)
+        } catch (error) {
+          // User denied account access...
         }
+      }
+      // Legacy dapp browsers...
+      //else if (window.web3) {
+      //  App.web3Provider = web3.currentProvider
+      //  window.web3 = new Web3(web3.currentProvider)
+      //  // Acccounts always exposed
+      //  web3.eth.sendTransaction({/* ... */})
+      //}
+      // Non-dapp browsers...
+      else {
+        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
+      }
     },
+  
     loadAccount: async () => {
       // Set the current blockchain account
      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-     //App.account = web3.eth.accounts[0]
+     App.account = web3.eth.accounts[0]
     App.account = accounts[0];
+    
      //App.account = web3.eth.accounts[0]
-     console.log(accounts[0]);
+     
     },
     loadContract: async () => {
       const todoList = await $.getJSON("TodoList.json");
@@ -50,14 +67,7 @@ App = {
       App.todoList = await App.contracts.TodoList.deployed();
       
     },
-    render: async () => {
-      
-       
-        
-      $("#account").html(App.account)
-
-      
-    },
+    
     render: async () => {
         // Prevent double render
         if (App.loading) {
@@ -96,7 +106,7 @@ App = {
           $newTaskTemplate.find('input')
                           .prop('name', taskId)
                           .prop('checked', taskCompleted)
-                          //.on('click', App.toggleCompleted)
+                          .on('click', App.toggleCompleted)
     
           // Put the task in the correct list
           if (taskCompleted) {
@@ -109,6 +119,24 @@ App = {
           $newTaskTemplate.show()
         }
       },
+
+      createTask: async () => {
+        App.setLoading(true)
+        const content = $('#newTask').val()
+        //web3.eth.defaultAccount = web3.eth.accounts[0]
+        await App.todoList.createTask(content)
+        window.location.reload()
+      },
+    
+      toggleCompleted: async (e) => {
+        App.setLoading(true)
+        const taskId = e.target.name
+        //web3.eth.defaultAccount = web3.eth.accounts[0]
+        await App.todoList.toggleCompleted(taskId)
+        window.location.reload()
+      },
+
+
       setLoading: (boolean) => {
         App.loading = boolean
         const loader = $('#loader')
