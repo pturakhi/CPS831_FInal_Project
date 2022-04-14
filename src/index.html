@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Dapp University | Todo List</title>
+    <title>Todo List</title>
 
     <!-- Bootstrap -->
     <link href="vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -41,47 +41,66 @@
       }
     </style>
   </head>
-  <body>
-    <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="http://www.dappuniversity.com/free-download" target="_blank">Dapp University | Todo List</a>
+  <body style="background-color: #00203FFF;" >
+    <nav class="navbar navbar-dark fixed-top flex-md-nowrap p-0 shadow" style="background-color:#ADEFD1FF;">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" style="color:#00203FFF; font-size: 40px; font-weight:800;" target="_blank">Todo List</a>
       <ul class="navbar-nav px-3">
-        <li class="nav-item text-nowrap d-none d-sm-none d-sm-block">
+        <!-- <li class="nav-item text-nowrap d-none d-sm-none d-sm-block">
           <small><a class="nav-link" href="#"><span id="account"></span></a></small>
-        </li>
+        </li> -->
       </ul>
     </nav>
+
     <div class="container-fluid">
+      <p class="text-right" id="currentTime" style="color: #ADEFD1FF; padding-top: 80px; font-weight: 900; text-decoration: underline;"></p>
       <div class="row">
         <main role="main" class="col-lg-12 d-flex justify-content-center">
           <div id="loader" class="text-center">
-            <p class="text-center">Loading...</p>
+            <script>
+              function showTime() {
+                document.getElementById('currentTime').innerHTML = new Date().toUTCString();
+              }
+              showTime();
+              setInterval(function () {
+                showTime();
+              }, 1000);
+
+            </script>
+            <p class="text-center" style="color: #ADEFD1FF; padding-top: 50px;">Loading...</p>
           </div>
+          <div class="card mb-3" style="width: 30rem;" class="col-lg-12 d-flex justify-content-center">
+            <div class="card-header">
+              <b style="color: rgb(122, 121, 121);">My To-do list</b>
+            </div>
+          <div class="card-body">
           <div id="content">
             <form onSubmit="App.createTask(); return false;">
-              <input id="newTask" type="text" class="form-control" placeholder="Add task..." required>
+              <input id="newTask" type="text" class="form-control" placeholder="Add a task..." required>
               <input type="submit" hidden="">
             </form>
-            <ul id="taskList" class="list-unstyled">
+            <ul id="taskList" class="list-unstyled" class="list-group list-group-flush">
               <div class="taskTemplate" class="checkbox" style="display: none">
                 <label>
-                  <input type="checkbox" />
-                  <span class="content">Task content goes here...</span>
+                  <input style="width: 18px; height: 18px;" type="checkbox" />
+                  <span class="content" style="color: rgb(95, 93, 93);">Task content goes here...</span>
                 </label>
               </div>
             </ul>
             <ul id="completedTaskList" class="list-unstyled">
             </ul>
           </div>
+        </div>
+        </div>
         </main>
       </div>
       <div class="col-lg-12 d-flex justify-content-center">
         <br>
-        <p style="font-size:12px;">
+        <p style="font-size:14px; color: rgb(176, 175, 175);">
           <i id="compCount"></i> of <i id="tCount"></i> <i>Tasks Completed</i>
         </p>
       </div>
       <div class="col-lg-12 d-flex justify-content-center">
-        <input style="font-size:10px;" type="button" id="Undo" value="Undo All" onClick="App.toggleUndoAll(); return false;">
+        <input style="font-size:12px;" type="button" type="button" class="btn btn-light" id="Undo" value="Undo All" onClick="App.toggleUndoAll(); return false;">
       </div>
     </div>
 
