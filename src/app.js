@@ -93,12 +93,16 @@ App = {
         const $taskTemplate = $('.taskTemplate')
     
         // Render out each task with a new task template
+        var completedCount = 0;
         for (var i = 1; i <= taskCount; i++) {
           // Fetch the task data from the blockchain
           const task = await App.todoList.tasks(i)
           const taskId = task[0].toNumber()
           const taskContent = task[1]
           const taskCompleted = task[2]
+          if(task[2] == true){ 
+            completedCount = completedCount + 1;
+          }
     
           // Create the html for the task
           const $newTaskTemplate = $taskTemplate.clone()
@@ -114,7 +118,10 @@ App = {
           } else {
             $('#taskList').append($newTaskTemplate)
           }
-    
+          const totalTaskCount = taskCount.c[0];
+          console.log("Testing array:", taskCount);
+          document.getElementById("tCount").innerHTML = totalTaskCount;
+          document.getElementById("compCount").innerHTML = completedCount;
           // Show the task
           $newTaskTemplate.show()
         }
@@ -133,6 +140,42 @@ App = {
         const taskId = e.target.name
         //web3.eth.defaultAccount = web3.eth.accounts[0]
         await App.todoList.toggleCompleted(taskId)
+        window.location.reload()
+      },
+
+      toggleUndoAll: async () => {
+        App.setLoading(true)
+        const taskCount = await App.todoList.taskCount()
+        for (var i = 1; i <= taskCount; i++) {
+          // Fetch the task data from the blockchain
+          const task = await App.todoList.tasks(i)
+          if(task[2] == true){ 
+            const taskId = task[0].toNumber()
+            await App.todoList.toggleCompleted(taskId)
+            console.log("Task ", taskId, ": ")
+          }
+        }
+        
+        // const listOfIds = [];
+        // for (var i = 1; i <= taskCount; i++) {
+        //   // Fetch the task data from the blockchain
+        //   const task = await App.todoList.tasks(i)
+        //   if(task[2] == true){ 
+        //     const taskId = task[0].toNumber()
+        //     listOfIds[i]= taskId;
+            
+        //     console.log("Task ", taskId, ": ")
+        //   }
+        // }
+        // await App.todoList.toggleUncompleted(listOfIds)
+        window.location.reload()
+      },
+
+      taskUpdated: async (e) => {
+        App.setLoading(true)
+        const newContent = "default"
+        //web3.eth.defaultAccount = web3.eth.accounts[0]
+        await App.todoList.taskUpdated(newContent)
         window.location.reload()
       },
 
